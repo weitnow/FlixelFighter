@@ -22,13 +22,13 @@ class PlayState extends FlxState
 		//FlxG.camera.bgColor = 0xFFCFF10E;
 		// FlxG.camera.height = 72;
 
-		//bgColor = 0xFFE68EF8;
+		bgColor = 0xFFA0A5AD;
 
 		p1 = new Character(20, 100);
 		add(p1);
 
-		p2 = new Fighter(120, 100);
-		add(p2);
+		// p2 = new Fighter(120, 100);
+		// add(p2);
 
 
 	
