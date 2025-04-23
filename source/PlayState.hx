@@ -1,5 +1,6 @@
 package;
 
+import entities.Character;
 import flixel.FlxG;
 import flixel.FlxState;
 import gameObjects.Fighter;
@@ -8,8 +9,9 @@ import gameObjects.Fighter;
 class PlayState extends FlxState
 {
 	
-	var fighter:Fighter;
-	
+	var p1:Character;
+	var p2:Fighter;
+
 
 
 	override public function create()
@@ -18,13 +20,16 @@ class PlayState extends FlxState
 			
 		// set camera color
 		//FlxG.camera.bgColor = 0xFFCFF10E;
-		FlxG.camera.height = 72;
-		
+		// FlxG.camera.height = 72;
+
 		//bgColor = 0xFFE68EF8;
-		
-		fighter = new Fighter(80, 112);
-		add(fighter);
-		add(fighter.testgroup);	//<-- does not work, shows nothing
+
+		p1 = new Character(20, 100);
+		add(p1);
+
+		p2 = new Fighter(120, 100);
+		add(p2);
+
 
 	
 	}
