@@ -1,6 +1,8 @@
 package entities;
 
 import flixel.FlxSprite;
+import flixel.animation.FlxAnimation;
+import flixel.graphics.FlxAsepriteUtil;
 import flixel.group.FlxSpriteGroup;
 import flixel.util.FlxColor;
 
@@ -35,6 +37,9 @@ class Character extends FlxSpriteGroup
 	public var fighterSprite:FlxSprite;
 	public var weaponSprite:FlxSprite;
 
+	// animations
+	var animList:Array<FlxAnimation>;
+
 	// collisionboxes
 	public var hurtboxes:Array<FlxSprite>;
 	public var hitboxes:Array<FlxSprite>;
@@ -45,30 +50,36 @@ class Character extends FlxSpriteGroup
         super(X, Y);
 
         // Load the player sprite
-		fighterSprite = new FlxSprite(0, 0);
-		fighterSprite.makeGraphic(32, 32, FlxColor.BLUE); // Placeholder for player sprite
+		fighterSprite = new FlxSprite(0, 0); // Placeholder for player sprite, will be loaded with loadAnims()
         add(fighterSprite);
+
 		// Load the weapon sprite
 		weaponSprite = new FlxSprite(32, 0);
-		weaponSprite.makeGraphic(16, 16, FlxColor.BLUE); // Placeholder for weapon sprite
+		weaponSprite.makeGraphic(16, 16, FlxColor.RED); // Placeholder for weapon sprite
 		add(weaponSprite);
 
 		// Initialize the collisionboxes
 		hurtboxes = [];
 		hitboxes = [];
 		attackData = [
-			"idle" => {
+			"Idle" => {
 				hurtboxes: [
 					{
 						offsetX: 0,
 						offsetY: -32,
 						width: 32,
 						height: 32
+					},
+					{
+						offsetX: 32,
+						offsetY: 0,
+						width: 32,
+						height: 32
 					}
 				],
 				hitboxes: []
 			},
-			"punch" => {
+			"B Move" => {
 				hurtboxes: [
 					{
 						offsetX: 10,
@@ -90,7 +101,9 @@ class Character extends FlxSpriteGroup
 			}
 		];
 
+		loadAnims();
 		createHurtboxes();
+
 	}
 
     override public function update(elapsed:Float):Void
@@ -104,16 +117,10 @@ class Character extends FlxSpriteGroup
     }
 	public function createHurtboxes():Void
 	{
-		/*
-			var test:FlxSprite = new FlxSprite(0, -32);
-			test.makeGraphic(32, 32, FlxColor.RED);
-			add(test);
-		 */
-
-		var currentAttack = attackData.get("idle"); // attackData.get(animation.name);
-
+		var currentAttack = attackData.get(fighterSprite.animation.name);
+		
 		if (currentAttack == null)
-			return; // Todo: Handle missing animation data
+			return; // No attack data for this animation
 
 		for (hurtboxData in currentAttack.hurtboxes)
 		{
@@ -123,8 +130,19 @@ class Character extends FlxSpriteGroup
 			hurtbox.exists = true;
 			hurtbox.immovable = true; // Hurtboxes don't move
 			hurtbox.active = true;
-			add(hurtbox);
+			add(hurtbox); // add to the group for updating position(!) and debug draw
 			hurtboxes.push(hurtbox);
 		}
-	} 
+	}
+	function loadAnims()
+	{
+		FlxAsepriteUtil.loadAseAtlasAndTagsByIndex(fighterSprite, "assets/images/aseprite/gbFighter.png", "assets/images/aseprite/gbFighter.json");
+
+		animList = fighterSprite.animation.getAnimationList();
+
+		var animNames:Array<String> = fighterSprite.animation.getNameList();
+
+		// Set the default animation to "Idle"
+		fighterSprite.animation.play("Idle");
+	}
 }
