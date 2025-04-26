@@ -26,6 +26,8 @@ class PlayState extends FlxState
 
 		p1 = new Character(20, 100);
 		add(p1);
+		p1.playAnimation("B Move");
+
 
 
 		// p2 = new Fighter(120, 100);
