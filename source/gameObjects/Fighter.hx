@@ -10,8 +10,8 @@ class Fighter extends FlxSprite
     override public function new(x:Float, y:Float)
     {
         super(x, y);
-		// loadGraphic("assets/images/aseprite/debug32x32.png", true, 32, 32);
-		makeGraphic(32, 32, 0xFF38AF6A); // Placeholder for player sprite
+		loadGraphic("assets/images/aseprite/debug32x32.png", true, 32, 32);
+		// makeGraphic(32, 32, 0xFF38AF6A); // Placeholder for player sprite
         
 
     }

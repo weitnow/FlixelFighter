@@ -24,11 +24,9 @@ typedef AttackData = {
 
 class Character extends FlxSpriteGroup {
     // Sprites
-    public var fighterSprite:FlxSprite;
-    public var weaponSprite:FlxSprite;
+	public var fighterSprite:FlxSprite;
 
-    // Animations
-    var animList:Array<FlxAnimation>;
+	// Animations
     var animNames:Array<String>;
 
     // Collision boxes
@@ -53,15 +51,13 @@ class Character extends FlxSpriteGroup {
         super(X, Y);
 
         // Initialize sprites
-        fighterSprite = new FlxSprite(0, 0);
-        weaponSprite = new FlxSprite(32, 0);
-        weaponSprite.makeGraphic(16, 16, FlxColor.RED);
-        add(fighterSprite);
-        add(weaponSprite);
+		fighterSprite = new FlxSprite(0, 0);
+		add(fighterSprite);
 
-        // Initialize data struc10
-        attackData = new Map<String, AttackData>();
-        animList = [];
+		// Initialize data structures
+		hurtboxes = [];
+		hitboxes = [];
+		attackData = new Map<String, AttackData>();
         animNames = [];
         collisionBoxSprites = new Map<String, FlxSprite>(); // Initialize the map!
 
@@ -84,8 +80,7 @@ class Character extends FlxSpriteGroup {
     }
 
     override public function destroy():Void {
-        fighterSprite = FlxDestroyUtil.destroy(fighterSprite);
-        weaponSprite = FlxDestroyUtil.destroy(weaponSprite);
+		fighterSprite = FlxDestroyUtil.destroy(fighterSprite);
         for (box in hurtboxes)
             FlxDestroyUtil.destroy(box);
         for (box in hitboxes)
@@ -96,8 +91,7 @@ class Character extends FlxSpriteGroup {
         }
         hurtboxes = null;
         hitboxes = null;
-        attackData = null;
-        animList = null;
+		attackData = null;
         animNames = null;
         collisionBoxSprites = null; // Clear the map.
         super.destroy();
@@ -111,10 +105,9 @@ class Character extends FlxSpriteGroup {
 
         FlxAsepriteUtil.loadAseAtlasAndTagsByIndex(fighterSprite, "assets/images/aseprite/gbFighter.png", "assets/images/aseprite/gbFighter.json");
 
-        animList = fighterSprite.animation.getAnimationList();
-        animNames = fighterSprite.animation.getNameList();
+		animNames = fighterSprite.animation.getNameList();
 
-        playAnimation("Idle");
+		playAnimation("B Move");
     }
 
     public function playAnimation(name:String, ?force:Bool = false):Void {
@@ -130,7 +123,14 @@ class Character extends FlxSpriteGroup {
     function loadAttackData():Void {
         attackData["Idle"] = {
             hurtboxes: [
-                {offsetX: -10, offsetY: -10, width: 5, height: 5, frame: 1, damage: 0},
+				{
+					offsetX: 0,
+					offsetY: 0,
+					width: 5,
+					height: 5,
+					frame: 1,
+					damage: 0
+				},
             ],
             hitboxes: []
         };
@@ -151,22 +151,22 @@ class Character extends FlxSpriteGroup {
         attackData["B Move"] = {
                 hurtboxes: [
                     {
-                        offsetX: -20,
-                        offsetY: -10,
-                        width: 5,
-                        height: 5,
-                        frame: 3,
-                        damage: 10
+					offsetX: 0,
+					offsetY: 0,
+					width: 5,
+					height: 5,
+					frame: 42,
+					damage: 10
                     }
                 ],
                 hitboxes: [
                     {
-                        offsetX: 30,
-                        offsetY: 10,
-                        width: 20,
-                        height: 20,
-                        frame: 3,
-                        damage: 10
+					offsetX: 10,
+					offsetY: 10,
+					width: 5,
+					height: 5,
+					frame: 42,
+					damage: 10
                     }
                 ]
             };
@@ -178,6 +178,7 @@ class Character extends FlxSpriteGroup {
             remove(box);
             FlxDestroyUtil.destroy(box);
         }
+
         hurtboxes = [];
         hitboxes = [];
         collisionBoxSprites.clear(); // Clear the map
@@ -197,7 +198,7 @@ class Character extends FlxSpriteGroup {
         var key = getCollisionBoxKey(animName, data.frame, type, index); // Unique key
         var box = new FlxSprite(data.offsetX, data.offsetY);
         box.makeGraphic(data.width, data.height, color);
-        box.alpha = 0.5;
+		box.alpha = 0.0;
         box.exists = true;
         box.immovable = true;
         box.active = false; // Start as inactive.
@@ -216,6 +217,8 @@ class Character extends FlxSpriteGroup {
         // Hide all collision boxes first.
         for (key in collisionBoxSprites.keys()) { // Changed to iterate over keys
             collisionBoxSprites.get(key).active = false;
+			collisionBoxSprites.get(key).alpha = 0.0; // Hide it.
+
         }
 
         // Then, show only the relevant ones for the current animation and frame.
@@ -231,6 +234,7 @@ class Character extends FlxSpriteGroup {
                          box.x = fighterSprite.x + hurtboxData.offsetX;
                          box.y = fighterSprite.y + hurtboxData.offsetY;
                         box.active = true; // Show it.
+						box.alpha = 0.5; // Set alpha to 0.5 for visibility.
                     }
                 }
             }
@@ -243,6 +247,7 @@ class Character extends FlxSpriteGroup {
                         box.x = fighterSprite.x + hitboxData.offsetX;
                         box.y = fighterSprite.y + hitboxData.offsetY;
                         box.active = true; // Show it.
+						box.alpha = 0.5; // Set alpha to 0.5 for visibility.
                     }
                 }
             }
